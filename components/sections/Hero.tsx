@@ -58,7 +58,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="heading-xl mb-6 text-shadow-lg">
+            <h1 className="heading-xl mb-6 text-shadow-lg font-[family-name:var(--font-giordano)]">
               TIMELESS ELEGANCE
             </h1>
             <p className="text-lg md:text-xl font-light tracking-wide mb-8 max-w-2xl mx-auto text-shadow">

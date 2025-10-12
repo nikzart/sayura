@@ -2,10 +2,18 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 
 export default function CollectionsHero() {
+  const scrollToContent = () => {
+    window.scrollTo({
+      top: window.innerHeight,
+      behavior: 'smooth',
+    });
+  };
+
   return (
-    <section className="relative h-[70vh] overflow-hidden">
+    <section className="relative w-full h-screen overflow-hidden">
       <Image
         src="/images/collections/collections-hero.jpg"
         alt="SAYURA Collections"
@@ -32,6 +40,18 @@ export default function CollectionsHero() {
           </motion.div>
         </div>
       </div>
+
+      {/* Scroll Indicator */}
+      <motion.button
+        onClick={scrollToContent}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center gap-2 text-white"
+        animate={{ y: [0, 10, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        aria-label="Scroll to content"
+      >
+        <span className="text-xs tracking-widest-2 uppercase">Scroll</span>
+        <ChevronDown size={24} />
+      </motion.button>
     </section>
   );
 }

@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import StoresHero from '@/components/sections/StoresHero';
 import StoreLocator from '@/components/sections/StoreLocator';
 
 export const metadata: Metadata = {
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function StoresPage() {
-  return <StoreLocator />;
+  return (
+    <>
+      <StoresHero />
+      <StoreLocator />
+    </>
+  );
 }

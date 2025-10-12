@@ -115,7 +115,7 @@ export default function Header() {
                     <Link
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block text-2xl font-light tracking-wide py-2 border-b border-gray-200 hover:text-gold transition-colors"
+                      className="block text-2xl font-light tracking-wide py-2 border-b border-gray-200 hover:text-gold transition-colors font-[family-name:var(--font-giordano)]"
                     >
                       {link.label}
                     </Link>

@@ -65,3 +65,19 @@ export function scrollToElement(elementId: string, offset: number = 100): void {
     });
   }
 }
+
+/**
+ * Get product by slug
+ */
+export function getProductBySlug(slug: string, products: any[]) {
+  return products.find(product => product.slug === slug);
+}
+
+/**
+ * Get related products (same category, excluding current product)
+ */
+export function getRelatedProducts(productId: number, category: string, products: any[], limit: number = 4) {
+  return products
+    .filter(product => product.category === category && product.id !== productId)
+    .slice(0, limit);
+}

@@ -2,10 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Giordano Gold';
+  src: url('/fonts/Giordano Gold Serif.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --font-playfair: 'Playfair Display', serif;
     --font-montserrat: 'Montserrat', sans-serif;
+    --font-giordano: 'Giordano Gold', serif;
   }
 
   html {
@@ -52,18 +61,22 @@
   /* Heading Styles */
   .heading-xl {
     @apply text-4xl md:text-5xl lg:text-6xl font-normal tracking-wider;
+    font-family: var(--font-giordano);
   }
 
   .heading-lg {
     @apply text-3xl md:text-4xl lg:text-5xl font-normal tracking-wide;
+    font-family: var(--font-giordano);
   }
 
   .heading-md {
     @apply text-2xl md:text-3xl lg:text-4xl font-normal tracking-wide;
+    font-family: var(--font-giordano);
   }
 
   .heading-sm {
     @apply text-xl md:text-2xl font-normal tracking-wide;
+    font-family: var(--font-giordano);
   }
 
   /* Text Styles */
