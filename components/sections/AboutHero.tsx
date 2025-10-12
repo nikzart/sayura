@@ -15,7 +15,7 @@ export default function AboutHero() {
   return (
     <section className="relative w-full h-screen overflow-hidden">
       <Image
-        src="/images/about/about-hero.jpg"
+        src="/images/collections/heritage.jpg"
         alt="SAYURA - Our Story"
         fill
         className="object-cover"

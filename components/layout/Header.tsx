@@ -46,16 +46,32 @@ export default function Header() {
           {/* Logo - Centered at Top */}
           <div className="flex justify-center mb-6 md:mb-8">
             <Link href="/" className="relative z-50">
-              <Image
-                src="/sayura-logo.svg"
-                alt="SAYURA"
-                width={200}
-                height={60}
-                className={`w-auto transition-all duration-300 ${
-                  isScrolled ? 'h-10 md:h-12' : 'h-16 md:h-20 lg:h-24'
-                }`}
-                priority
-              />
+              <div className="relative">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={isScrolled ? 'minimized' : 'full'}
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{
+                      duration: 0.6,
+                      ease: [0.4, 0, 0.2, 1],
+                      opacity: { duration: 0.5 }
+                    }}
+                  >
+                    <Image
+                      src={isScrolled ? "/sayura-logo-minimized.svg" : "/sayura-logo.svg"}
+                      alt="SAYURA"
+                      width={200}
+                      height={isScrolled ? 50 : 80}
+                      className={`w-auto ${
+                        isScrolled ? 'h-10 md:h-12' : 'h-16 md:h-20 lg:h-24'
+                      }`}
+                      priority
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </Link>
           </div>
 
