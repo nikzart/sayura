@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SlidersHorizontal } from 'lucide-react';
 import { PRODUCT_CATEGORIES } from '@/lib/constants';
@@ -19,6 +19,17 @@ export default function FilterBar({
   onSortChange,
 }: FilterBarProps) {
   const [showFilters, setShowFilters] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
 
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
@@ -43,7 +54,7 @@ export default function FilterBar({
 
         {/* Desktop: Always Visible, Mobile: Collapsible */}
         <AnimatePresence>
-          {(showFilters || window.innerWidth >= 1024) && (
+          {(showFilters || isDesktop) && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}

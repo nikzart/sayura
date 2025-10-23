@@ -13,13 +13,14 @@ import RelatedProducts from '@/components/product/RelatedProducts';
 import Button from '@/components/ui/Button';
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const product = getProductBySlug(params.slug, SAMPLE_PRODUCTS);
+  const { slug } = await params;
+  const product = getProductBySlug(slug, SAMPLE_PRODUCTS);
 
   if (!product) {
     return {
@@ -33,8 +34,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   };
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const product = getProductBySlug(params.slug, SAMPLE_PRODUCTS);
+export default async function ProductPage({ params }: ProductPageProps) {
+  const { slug } = await params;
+  const product = getProductBySlug(slug, SAMPLE_PRODUCTS);
 
   if (!product) {
     notFound();
@@ -99,7 +101,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     Tags
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {product.tags.map((tag) => (
+                    {product.tags.map((tag: string) => (
                       <span
                         key={tag}
                         className="px-3 py-1 bg-gray-100 text-gray-700 text-xs tracking-wide uppercase"
