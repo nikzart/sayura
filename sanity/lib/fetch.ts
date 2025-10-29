@@ -11,7 +11,6 @@ import {
   relatedProductsQuery,
   categoriesQuery,
   storeLocationsQuery,
-  aboutSectionsQuery,
   aboutPageQuery,
   siteSettingsQuery,
   instagramPostsQuery,
@@ -66,12 +65,7 @@ export async function getStoreLocations() {
   return await client.fetch(storeLocationsQuery);
 }
 
-// About Sections (Legacy)
-export async function getAboutSections() {
-  return await client.fetch(aboutSectionsQuery);
-}
-
-// About Page (New)
+// About Page
 export async function getAboutPage() {
   return await client.fetch(aboutPageQuery);
 }

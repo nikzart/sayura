@@ -135,18 +135,7 @@ export const storeLocationsQuery = groq`*[_type == "storeLocation"] | order(name
   image
 }`;
 
-// About Sections (Legacy)
-export const aboutSectionsQuery = groq`*[_type == "aboutSection"] | order(order asc){
-  _id,
-  title,
-  heading,
-  content,
-  image,
-  imagePosition,
-  order
-}`;
-
-// About Page (New)
+// About Page
 export const aboutPageQuery = groq`*[_type == "aboutPage"][0]{
   _id,
   pageTitle,
