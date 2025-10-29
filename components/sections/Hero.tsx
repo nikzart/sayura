@@ -64,12 +64,9 @@ export default function Hero() {
             <p className="text-lg md:text-xl font-light tracking-wide mb-8 max-w-2xl mx-auto text-shadow">
               Discover our exclusive collection of premium clothing, where tradition meets contemporary design
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex justify-center">
               <Button variant="gold" size="lg">
-                Explore Collections
-              </Button>
-              <Button variant="secondary" size="lg">
-                Shop New Arrivals
+                EXPLORE
               </Button>
             </div>
           </motion.div>

@@ -335,24 +335,24 @@ export const STORE_LOCATIONS = [
 export const COLLECTIONS = [
   {
     id: 1,
-    title: "Spring Summer 2025",
-    description: "Ethereal silhouettes meet contemporary design",
-    image: "/images/collections/ss25.jpg",
-    slug: "spring-summer-2025",
+    title: "Bridal Lehenga",
+    description: "Exquisite handcrafted lehengas for your special day",
+    image: "/images/collections/bridal-lehenga.jpg",
+    slug: "bridal-lehenga",
   },
   {
     id: 2,
-    title: "Heritage Collection",
-    description: "Timeless elegance with traditional craftsmanship",
-    image: "/images/collections/heritage.jpg",
-    slug: "heritage",
+    title: "Bridal Saree",
+    description: "Timeless elegance in traditional drapes",
+    image: "/images/collections/bridal-saree.jpg",
+    slug: "bridal-saree",
   },
   {
     id: 3,
-    title: "Evening Luxe",
-    description: "Sophisticated pieces for special occasions",
-    image: "/images/collections/evening.jpg",
-    slug: "evening-luxe",
+    title: "Bridal Gown",
+    description: "Contemporary bridal sophistication",
+    image: "/images/collections/bridal-gown.jpg",
+    slug: "bridal-gown",
   },
 ];
 
