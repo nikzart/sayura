@@ -4,9 +4,10 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ZoomIn } from 'lucide-react';
+import { getSanityImageUrl } from '@/lib/sanityHelpers';
 
 interface ImageGalleryProps {
-  images: string[];
+  images: any[]; // Can be string[] or Sanity image objects
   productName: string;
 }
 
@@ -14,6 +15,14 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+
+  // Handle both string URLs and Sanity image objects
+  const getImageUrl = (image: any, width: number = 1200, height?: number) => {
+    if (typeof image === 'string') {
+      return image; // Static image path
+    }
+    return getSanityImageUrl(image, width, height); // Sanity image
+  };
 
   const activeImage = images[activeIndex] || images[0];
 
@@ -39,7 +48,7 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
           onMouseLeave={() => setIsZoomed(false)}
         >
           <Image
-            src={activeImage}
+            src={getImageUrl(activeImage, 1200, 1600)}
             alt={`${productName} - Image ${activeIndex + 1}`}
             fill
             className={`object-cover transition-transform duration-500 ${
@@ -69,7 +78,7 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
                 }`}
               >
                 <Image
-                  src={image}
+                  src={getImageUrl(image, 300, 300)}
                   alt={`${productName} - Thumbnail ${index + 1}`}
                   fill
                   className="object-cover"
@@ -116,7 +125,7 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
               onClick={(e) => e.stopPropagation()}
             >
               <Image
-                src={activeImage}
+                src={getImageUrl(activeImage, 1920, 2560)}
                 alt={`${productName} - Full view`}
                 fill
                 className="object-contain"

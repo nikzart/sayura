@@ -1,11 +1,17 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { Volume2, VolumeX, ChevronDown } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { motion } from 'framer-motion';
+import { getSanityFileUrl, getSanityImageUrl } from '@/lib/sanityHelpers';
 
-export default function Hero() {
+interface HeroProps {
+  heroData?: any;
+}
+
+export default function Hero({ heroData }: HeroProps) {
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -30,6 +36,14 @@ export default function Hero() {
     });
   };
 
+  // Use heroData if available, otherwise fallback to static data
+  const title = heroData?.title || 'TIMELESS ELEGANCE';
+  const subtitle = heroData?.subtitle || 'Discover our exclusive collection of premium clothing, where tradition meets contemporary design';
+  const ctaText = heroData?.ctaText || 'EXPLORE';
+  const ctaLink = heroData?.ctaLink || '/collections';
+  const videoUrl = heroData?.backgroundVideo ? getSanityFileUrl(heroData.backgroundVideo) : '/videos/hero-video.mp4';
+  const posterUrl = heroData?.posterImage ? getSanityImageUrl(heroData.posterImage, 1920, 1080) : '/images/hero-poster.jpg';
+
   return (
     <section className="relative w-full h-screen overflow-hidden">
       {/* Video Background */}
@@ -40,11 +54,11 @@ export default function Hero() {
         muted
         loop
         playsInline
-        poster="/images/hero-poster.jpg"
+        poster={posterUrl}
       >
-        <source src="/videos/hero-video.mp4" type="video/mp4" />
+        {videoUrl && <source src={videoUrl} type="video/mp4" />}
         {/* Fallback Image */}
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/images/hero-poster.jpg)' }} />
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${posterUrl})` }} />
       </video>
 
       {/* Overlay */}
@@ -59,15 +73,17 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <h1 className="heading-xl mb-6 text-shadow-lg font-[family-name:var(--font-giordano)]">
-              TIMELESS ELEGANCE
+              {title}
             </h1>
             <p className="text-lg md:text-xl font-light tracking-wide mb-8 max-w-2xl mx-auto text-shadow">
-              Discover our exclusive collection of premium clothing, where tradition meets contemporary design
+              {subtitle}
             </p>
             <div className="flex justify-center">
-              <Button variant="gold" size="lg">
-                EXPLORE
-              </Button>
+              <Link href={ctaLink}>
+                <Button variant="gold" size="lg">
+                  {ctaText}
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </div>

@@ -4,10 +4,13 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface ProductTabsProps {
-  category: string;
+  description?: any; // Sanity portable text or string
+  craftsmanship?: string;
+  styling?: string;
+  care?: string;
 }
 
-export default function ProductTabs({ category }: ProductTabsProps) {
+export default function ProductTabs({ description, craftsmanship, styling, care }: ProductTabsProps) {
   const [activeTab, setActiveTab] = useState('description');
 
   const tabs = [
@@ -84,7 +87,7 @@ export default function ProductTabs({ category }: ProductTabsProps) {
               who have dedicated their lives to textile artistry.
             </p>
             <p className="text-gray-700 leading-relaxed mb-4">
-              This {category.toLowerCase()} showcases:
+              This piece showcases:
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-700 mb-4">
               <li>Hand-embroidered details using traditional techniques</li>

@@ -67,17 +67,52 @@ export function scrollToElement(elementId: string, offset: number = 100): void {
 }
 
 /**
- * Get product by slug
+ * Get color hex value from color name
+ * Used for color swatches in product cards
  */
-export function getProductBySlug(slug: string, products: any[]) {
-  return products.find(product => product.slug === slug);
-}
+export function getColorValue(colorName: string): string {
+  const colorMap: { [key: string]: string } = {
+    // Neutrals
+    'Black': '#000000',
+    'White': '#FFFFFF',
+    'Ivory': '#FFFFF0',
+    'Beige': '#F5F5DC',
+    'Charcoal': '#36454F',
+    'Grey': '#808080',
+    'Navy': '#000080',
 
-/**
- * Get related products (same category, excluding current product)
- */
-export function getRelatedProducts(productId: number, category: string, products: any[], limit: number = 4) {
-  return products
-    .filter(product => product.category === category && product.id !== productId)
-    .slice(0, limit);
+    // Golds & Metallics
+    'Gold': '#FFD700',
+    'Champagne': '#F7E7CE',
+    'Rose Gold': '#B76E79',
+
+    // Blues
+    'Midnight Blue': '#191970',
+    'Royal Blue': '#4169E1',
+    'Teal': '#008080',
+
+    // Reds & Pinks
+    'Burgundy': '#800020',
+    'Maroon': '#800000',
+    'Wine': '#722F37',
+    'Crimson': '#DC143C',
+    'Plum': '#8E4585',
+    'Rose': '#FF007F',
+    'Coral': '#FF7F50',
+    'Peach': '#FFE5B4',
+    'Dusty Pink': '#DCAE96',
+
+    // Greens
+    'Emerald': '#50C878',
+    'Mint': '#98FF98',
+
+    // Purples
+    'Lavender': '#E6E6FA',
+
+    // Multi/Pattern
+    'Multi': 'linear-gradient(90deg, #FF6B6B, #4ECDC4, #FFE66D, #95E1D3)',
+    'Pastel': 'linear-gradient(90deg, #FFB3BA, #BAFFC9, #BAE1FF, #FFFFBA)',
+  };
+
+  return colorMap[colorName] || '#CCCCCC'; // Default gray if color not found
 }

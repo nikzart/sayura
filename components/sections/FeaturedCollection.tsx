@@ -4,8 +4,40 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Button from '@/components/ui/Button';
+import { getSanityImageUrl } from '@/lib/sanityHelpers';
 
-export default function FeaturedCollection() {
+interface FeaturedCollectionProps {
+  collections?: any[];
+}
+
+export default function FeaturedCollection({ collections = [] }: FeaturedCollectionProps) {
+  // Use Sanity collections if available, otherwise fallback to static data
+  const displayCollections = collections.length > 0 ? collections : [
+    {
+      title: 'Heritage Collection',
+      description: 'Timeless elegance with traditional craftsmanship',
+      slug: { current: 'heritage' },
+      image: '/images/collections/heritage.jpg',
+    },
+    {
+      title: 'Evening Luxe',
+      description: 'Sophisticated pieces for special occasions',
+      slug: { current: 'evening-luxe' },
+      image: '/images/collections/evening.jpg',
+    },
+  ];
+
+  const getImageUrl = (collection: any) => {
+    if (typeof collection.image === 'string') {
+      return collection.image;
+    }
+    return collection.image ? getSanityImageUrl(collection.image, 1200, 1500) : '';
+  };
+
+  const getCollectionSlug = (slug: string | { current: string }) => {
+    return typeof slug === 'string' ? slug : slug.current;
+  };
+
   return (
     <section className="section-padding bg-gray-50">
       <div className="container-custom">
@@ -32,72 +64,52 @@ export default function FeaturedCollection() {
               <p className="text-lg md:text-xl font-light mb-8 max-w-xl mx-auto text-shadow">
                 Ethereal silhouettes meet contemporary design in our latest collection
               </p>
-              <Button variant="gold" size="lg">
-                Explore Collection
-              </Button>
+              <Link href="/collections">
+                <Button variant="gold" size="lg">
+                  Explore Collection
+                </Button>
+              </Link>
             </div>
           </div>
         </motion.div>
 
         {/* Collections Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Collection 1 */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <Link href="/collections/heritage" className="group block">
-              <div className="relative aspect-[4/5] overflow-hidden mb-4">
-                <Image
-                  src="/images/collections/heritage.jpg"
-                  alt="Heritage Collection"
-                  fill
-                  className="object-cover image-hover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-              <h3 className="heading-sm mb-2 group-hover:text-gold transition-colors">
-                Heritage Collection
-              </h3>
-              <p className="text-sm text-gray-600 font-light mb-4">
-                Timeless elegance with traditional craftsmanship
-              </p>
-              <span className="text-sm font-medium tracking-widest-2 uppercase link-underline">
-                Discover More
-              </span>
-            </Link>
-          </motion.div>
+          {displayCollections.map((collection, index) => {
+            const slug = getCollectionSlug(collection.slug);
+            const imageUrl = getImageUrl(collection);
 
-          {/* Collection 2 */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <Link href="/collections/evening-luxe" className="group block">
-              <div className="relative aspect-[4/5] overflow-hidden mb-4">
-                <Image
-                  src="/images/collections/evening.jpg"
-                  alt="Evening Luxe Collection"
-                  fill
-                  className="object-cover image-hover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-              <h3 className="heading-sm mb-2 group-hover:text-gold transition-colors">
-                Evening Luxe
-              </h3>
-              <p className="text-sm text-gray-600 font-light mb-4">
-                Sophisticated pieces for special occasions
-              </p>
-              <span className="text-sm font-medium tracking-widest-2 uppercase link-underline">
-                Discover More
-              </span>
-            </Link>
-          </motion.div>
+            return (
+              <motion.div
+                key={collection._id || slug}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Link href={`/collections/${slug}`} className="group block">
+                  <div className="relative aspect-[4/5] overflow-hidden mb-4">
+                    <Image
+                      src={imageUrl}
+                      alt={collection.title}
+                      fill
+                      className="object-cover image-hover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
+                  <h3 className="heading-sm mb-2 group-hover:text-gold transition-colors">
+                    {collection.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 font-light mb-4">
+                    {collection.description}
+                  </p>
+                  <span className="text-sm font-medium tracking-widest-2 uppercase link-underline">
+                    Discover More
+                  </span>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

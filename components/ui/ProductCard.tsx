@@ -1,29 +1,38 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Card from './Card';
+import { getSanityImageUrl } from '@/lib/sanityHelpers';
 
 interface ProductCardProps {
-  id: number;
+  _id?: string;
+  id?: number;
   name: string;
-  category: string;
+  category: string | { name: string; slug: { current: string } };
   price: number;
-  image: string;
-  slug: string;
+  image?: string;
+  images?: any[];
+  slug: string | { current: string };
 }
 
 export default function ProductCard({
   name,
   category,
   image,
+  images,
   slug,
 }: ProductCardProps) {
+  // Handle both old static data and new Sanity data
+  const imageUrl = image || (images && images[0] ? getSanityImageUrl(images[0], 600, 800) : '');
+  const productSlug = typeof slug === 'string' ? slug : slug.current;
+  const categoryName = typeof category === 'string' ? category : category.name;
+
   return (
-    <Link href={`/products/${slug}`}>
+    <Link href={`/products/${productSlug}`}>
       <Card className="group cursor-pointer">
         {/* Image Container */}
         <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
           <Image
-            src={image}
+            src={imageUrl}
             alt={name}
             fill
             className="object-cover image-hover"
@@ -44,7 +53,7 @@ export default function ProductCard({
             {name}
           </h3>
           <p className="text-sm text-gray-600 font-light">
-            {category}
+            {categoryName}
           </p>
         </div>
       </Card>

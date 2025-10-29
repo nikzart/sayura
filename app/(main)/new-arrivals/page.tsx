@@ -1,40 +1,53 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Metadata } from 'next';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import NewArrivalsHero from '@/components/sections/NewArrivalsHero';
 import FilterBar from '@/components/sections/FilterBar';
 import FeaturedShowcase from '@/components/sections/FeaturedShowcase';
 import SeasonalBanner from '@/components/sections/SeasonalBanner';
 import ProductCardEnhanced from '@/components/ui/ProductCardEnhanced';
-import { SAMPLE_PRODUCTS } from '@/lib/constants';
+import { getNewArrivals, getFeaturedProducts } from '@/sanity/lib/fetch';
 
 export default function NewArrivalsPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [sortBy, setSortBy] = useState('newest');
+  const [products, setProducts] = useState<any[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Get featured products for showcase
-  const featuredProducts = useMemo(() => {
-    return SAMPLE_PRODUCTS.filter(p => p.isFeatured).slice(0, 3);
-  }, []);
-
-  // Get new arrivals only
-  const newProducts = useMemo(() => {
-    return SAMPLE_PRODUCTS.filter(p => p.isNew);
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const [newProducts, featured] = await Promise.all([
+          getNewArrivals(),
+          getFeaturedProducts(),
+        ]);
+        setProducts(newProducts);
+        setFeaturedProducts(featured.slice(0, 3));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
   }, []);
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
-    let products = [...newProducts];
+    let filtered = [...products];
 
     // Filter by category
     if (activeCategory !== 'All') {
-      products = products.filter(p => p.category === activeCategory);
+      filtered = filtered.filter(p => {
+        const categoryName = typeof p.category === 'string' ? p.category : p.category?.name;
+        return categoryName === activeCategory;
+      });
     }
 
     // Sort products
-    products.sort((a, b) => {
+    filtered.sort((a, b) => {
       switch (sortBy) {
         case 'newest':
           return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
@@ -43,14 +56,22 @@ export default function NewArrivalsPage() {
         case 'price-high':
           return b.price - a.price;
         case 'featured':
-          return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+          return (b.badges?.isFeatured ? 1 : 0) - (a.badges?.isFeatured ? 1 : 0);
         default:
           return 0;
       }
     });
 
-    return products;
-  }, [newProducts, activeCategory, sortBy]);
+    return filtered;
+  }, [products, activeCategory, sortBy]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Loading products...</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -90,7 +111,7 @@ export default function NewArrivalsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {filteredAndSortedProducts.map((product, index) => (
                 <motion.div
-                  key={product.id}
+                  key={product._id || product.id}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.05 }}
@@ -117,7 +138,7 @@ export default function NewArrivalsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {filteredAndSortedProducts.slice(8).map((product, index) => (
                 <motion.div
-                  key={product.id}
+                  key={product._id || product.id}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.05 }}

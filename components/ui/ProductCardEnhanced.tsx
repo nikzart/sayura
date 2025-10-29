@@ -4,14 +4,23 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Card from './Card';
+import { getSanityImageUrl } from '@/lib/sanityHelpers';
+import { getColorValue } from '@/lib/utils';
 
 interface ProductCardEnhancedProps {
-  id: number;
+  _id?: string;
+  id?: number;
   name: string;
-  category: string;
+  category: string | { name: string; slug: { current: string } };
   price: number;
-  image: string;
-  slug: string;
+  image?: string;
+  images?: any[];
+  slug: string | { current: string };
+  badges?: {
+    isNew?: boolean;
+    isBestSeller?: boolean;
+    isLimited?: boolean;
+  };
   isNew?: boolean;
   isBestSeller?: boolean;
   isLimited?: boolean;
@@ -22,14 +31,25 @@ export default function ProductCardEnhanced({
   name,
   category,
   image,
+  images,
   slug,
-  isNew = false,
-  isBestSeller = false,
-  isLimited = false,
+  badges,
+  isNew: isNewProp = false,
+  isBestSeller: isBestSellerProp = false,
+  isLimited: isLimitedProp = false,
   colors = [],
 }: ProductCardEnhancedProps) {
+  // Handle both old static data and new Sanity data
+  const imageUrl = image || (images && images[0] ? getSanityImageUrl(images[0], 600, 800) : '');
+  const productSlug = typeof slug === 'string' ? slug : slug.current;
+  const categoryName = typeof category === 'string' ? category : category.name;
+
+  // Handle badges from both formats
+  const isNew = badges?.isNew ?? isNewProp;
+  const isBestSeller = badges?.isBestSeller ?? isBestSellerProp;
+  const isLimited = badges?.isLimited ?? isLimitedProp;
   return (
-    <Link href={`/products/${slug}`}>
+    <Link href={`/products/${productSlug}`}>
       <motion.div
         whileHover={{ y: -8 }}
         transition={{ duration: 0.3 }}
@@ -38,7 +58,7 @@ export default function ProductCardEnhanced({
           {/* Image Container */}
           <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
             <Image
-              src={image}
+              src={imageUrl}
               alt={name}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -75,7 +95,7 @@ export default function ProductCardEnhanced({
           {/* Product Info */}
           <div className="p-4">
             <p className="text-xs text-gray-500 tracking-wider uppercase mb-1">
-              {category}
+              {categoryName}
             </p>
             <h3 className="text-base font-medium tracking-wide mb-2 group-hover:text-gold transition-colors">
               {name}
@@ -91,18 +111,7 @@ export default function ProductCardEnhanced({
                       key={index}
                       className="w-4 h-4 rounded-full border border-gray-300"
                       style={{
-                        background: color.toLowerCase().includes('gold') ? '#a17713' :
-                                   color.toLowerCase().includes('black') ? '#000' :
-                                   color.toLowerCase().includes('white') || color.toLowerCase().includes('ivory') || color.toLowerCase().includes('champagne') ? '#f5f5f5' :
-                                   color.toLowerCase().includes('blue') ? '#3b82f6' :
-                                   color.toLowerCase().includes('red') || color.toLowerCase().includes('crimson') || color.toLowerCase().includes('wine') || color.toLowerCase().includes('burgundy') || color.toLowerCase().includes('maroon') ? '#dc2626' :
-                                   color.toLowerCase().includes('green') || color.toLowerCase().includes('emerald') || color.toLowerCase().includes('teal') ? '#10b981' :
-                                   color.toLowerCase().includes('pink') || color.toLowerCase().includes('rose') || color.toLowerCase().includes('coral') || color.toLowerCase().includes('peach') ? '#ec4899' :
-                                   color.toLowerCase().includes('purple') || color.toLowerCase().includes('lavender') || color.toLowerCase().includes('plum') ? '#a855f7' :
-                                   color.toLowerCase().includes('grey') || color.toLowerCase().includes('gray') || color.toLowerCase().includes('charcoal') ? '#6b7280' :
-                                   color.toLowerCase().includes('beige') || color.toLowerCase().includes('camel') ? '#d4a574' :
-                                   color.toLowerCase().includes('mint') ? '#6ee7b7' :
-                                   '#9ca3af'
+                        background: getColorValue(color)
                       }}
                       title={color}
                     />

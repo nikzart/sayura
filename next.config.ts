@@ -1,14 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',
   images: {
-    unoptimized: true,
-    domains: ['scontent.cdninstagram.com', 'instagram.com'],
+    domains: ['scontent.cdninstagram.com', 'instagram.com', 'cdn.sanity.io'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**.cdninstagram.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
       },
     ],
   },

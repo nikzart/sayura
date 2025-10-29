@@ -3,11 +3,17 @@
 import { useState } from 'react';
 import { MapPin, Phone, Clock, Sparkles, Scissors, Gift } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { STORE_LOCATIONS } from '@/lib/constants';
-import Button from '@/components/ui/Button';
 
-export default function StoreLocator() {
-  const [selectedStore, setSelectedStore] = useState(STORE_LOCATIONS[0]);
+interface StoreLocatorProps {
+  stores: any[];
+}
+
+export default function StoreLocator({ stores }: StoreLocatorProps) {
+  const [selectedStore, setSelectedStore] = useState(stores && stores.length > 0 ? stores[0] : null);
+
+  if (!stores || stores.length === 0 || !selectedStore) {
+    return null;
+  }
 
   return (
     <section className="pt-24 md:pt-32">
@@ -31,14 +37,18 @@ export default function StoreLocator() {
         {/* Store List */}
         <div className="bg-white p-12 md:p-16 lg:p-20 overflow-y-auto max-h-[600px]">
           <div className="space-y-8">
-            {STORE_LOCATIONS.map((store, index) => (
+            {stores.map((store, index) => {
+              const storeId = store._id || store.id;
+              const selectedId = selectedStore?._id || selectedStore?.id;
+
+              return (
               <motion.div
-                key={store.id}
+                key={storeId}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.08 }}
                 className={`p-8 cursor-pointer transition-all duration-300 ${
-                  selectedStore.id === store.id
+                  selectedId === storeId
                     ? 'border border-black'
                     : 'border border-gray-200 hover:border-gray-400'
                 }`}
@@ -80,7 +90,8 @@ export default function StoreLocator() {
                   </button>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

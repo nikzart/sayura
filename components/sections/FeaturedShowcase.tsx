@@ -4,13 +4,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { getSanityImageUrl } from '@/lib/sanityHelpers';
 
 interface FeaturedProduct {
+  _id?: string;
   name: string;
-  category: string;
-  image: string;
-  slug: string;
-  shortDescription: string;
+  category: string | { name: string; slug: { current: string } };
+  image?: string;
+  images?: any[];
+  slug: string | { current: string };
+  shortDescription?: string;
 }
 
 interface FeaturedShowcaseProps {
@@ -19,6 +22,20 @@ interface FeaturedShowcaseProps {
 
 export default function FeaturedShowcase({ products }: FeaturedShowcaseProps) {
   if (products.length === 0) return null;
+
+  const getImageUrl = (product: FeaturedProduct, width: number, height?: number) => {
+    if (product.image) return product.image;
+    if (product.images && product.images[0]) return getSanityImageUrl(product.images[0], width, height);
+    return '';
+  };
+
+  const getProductSlug = (slug: string | { current: string }) => {
+    return typeof slug === 'string' ? slug : slug.current;
+  };
+
+  const getCategoryName = (category: string | { name: string; slug: { current: string } }) => {
+    return typeof category === 'string' ? category : category.name;
+  };
 
   return (
     <section className="section-padding bg-white">
@@ -51,10 +68,10 @@ export default function FeaturedShowcase({ products }: FeaturedShowcaseProps) {
             viewport={{ once: true }}
             className="md:col-span-2 lg:row-span-2"
           >
-            <Link href={`/products/${products[0].slug}`} className="group block h-full">
+            <Link href={`/products/${getProductSlug(products[0].slug)}`} className="group block h-full">
               <div className="relative h-full min-h-[500px] lg:min-h-[600px] overflow-hidden bg-gray-100">
                 <Image
-                  src={products[0].image}
+                  src={getImageUrl(products[0], 1200, 1600)}
                   alt={products[0].name}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -72,7 +89,7 @@ export default function FeaturedShowcase({ products }: FeaturedShowcaseProps) {
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-8">
                   <div className="text-white">
                     <p className="text-xs tracking-widest uppercase opacity-70 mb-2">
-                      {products[0].category}
+                      {getCategoryName(products[0].category)}
                     </p>
                     <h3 className="text-2xl md:text-3xl font-normal tracking-wide mb-3 font-[family-name:var(--font-giordano)]">
                       {products[0].name}
@@ -90,17 +107,17 @@ export default function FeaturedShowcase({ products }: FeaturedShowcaseProps) {
           {/* Secondary Products - Minimal Cards */}
           {products.slice(1, 3).map((product, index) => (
             <motion.div
-              key={product.slug}
+              key={product._id || getProductSlug(product.slug)}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: (index + 1) * 0.2 }}
               viewport={{ once: true }}
               className="lg:row-span-1"
             >
-              <Link href={`/products/${product.slug}`} className="group block h-full">
+              <Link href={`/products/${getProductSlug(product.slug)}`} className="group block h-full">
                 <div className="relative h-full min-h-[280px] lg:min-h-[290px] overflow-hidden bg-gray-100">
                   <Image
-                    src={product.image}
+                    src={getImageUrl(product, 800, 1000)}
                     alt={product.name}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -113,7 +130,7 @@ export default function FeaturedShowcase({ products }: FeaturedShowcaseProps) {
                   {/* Clean Bottom Info */}
                   <div className="absolute bottom-0 left-0 right-0 bg-white p-6">
                     <p className="text-xs tracking-wider uppercase text-gray-400 mb-1">
-                      {product.category}
+                      {getCategoryName(product.category)}
                     </p>
                     <h4 className="text-lg font-normal tracking-wide mb-2 group-hover:text-gold transition-colors">
                       {product.name}

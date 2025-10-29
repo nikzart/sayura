@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Heart, MapPin, Share2 } from 'lucide-react';
-import { SAMPLE_PRODUCTS } from '@/lib/constants';
-import { getProductBySlug, getRelatedProducts, formatPrice } from '@/lib/utils';
+import { getProductBySlug, getRelatedProducts, getProducts } from '@/sanity/lib/fetch';
+import { formatPrice } from '@/lib/utils';
 import ImageGallery from '@/components/product/ImageGallery';
 import BreadcrumbNav from '@/components/product/BreadcrumbNav';
 import ProductBadges from '@/components/product/ProductBadges';
@@ -20,7 +20,7 @@ interface ProductPageProps {
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug, SAMPLE_PRODUCTS);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return {
@@ -30,26 +30,32 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
   return {
     title: `${product.name} | SAYURA`,
-    description: product.shortDescription,
+    description: product.shortDescription || `${product.name} - Premium clothing from SAYURA`,
   };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug, SAMPLE_PRODUCTS);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const relatedProducts = getRelatedProducts(product.id, product.category, SAMPLE_PRODUCTS, 4);
+  // Get related products based on category
+  const categorySlug = typeof product.category === 'string' ? product.category : product.category.slug.current;
+  const productSlug = typeof product.slug === 'string' ? product.slug : product.slug.current;
+  const relatedProducts = await getRelatedProducts(categorySlug, productSlug);
 
   return (
     <div className="min-h-screen">
       {/* Product Hero Section */}
       <section className="section-padding">
         <div className="container-custom">
-          <BreadcrumbNav category={product.category} productName={product.name} />
+          <BreadcrumbNav
+            category={typeof product.category === 'string' ? product.category : product.category.name}
+            productName={product.name}
+          />
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
             {/* Left: Image Gallery (60%) */}
@@ -61,9 +67,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="lg:col-span-2">
               {/* Badges */}
               <ProductBadges
-                isNew={product.isNew}
-                isBestSeller={product.isBestSeller}
-                isLimited={product.isLimited}
+                isNew={product.badges?.isNew}
+                isBestSeller={product.badges?.isBestSeller}
+                isLimited={product.badges?.isLimited}
                 className="mb-6"
               />
 
@@ -74,7 +80,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               {/* Category */}
               <p className="text-sm text-gray-600 tracking-wider uppercase mb-6">
-                {product.category}
+                {typeof product.category === 'string' ? product.category : product.category.name}
               </p>
 
               {/* Short Description */}
@@ -171,7 +177,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {/* Product Information Tabs */}
       <section className="section-padding bg-gray-50">
         <div className="container-custom max-w-5xl">
-          <ProductTabs category={product.category} />
+          <ProductTabs
+            description={product.description}
+            craftsmanship={product.craftsmanship}
+            styling={product.styling}
+            care={product.care}
+          />
         </div>
       </section>
 
@@ -189,7 +200,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
 // Generate static params for all products
 export async function generateStaticParams() {
-  return SAMPLE_PRODUCTS.map((product) => ({
-    slug: product.slug,
+  const products = await getProducts();
+  return products.map((product: any) => ({
+    slug: typeof product.slug === 'string' ? product.slug : product.slug.current,
   }));
 }
+
+// Enable ISR - revalidate every hour
+export const revalidate = 3600;
