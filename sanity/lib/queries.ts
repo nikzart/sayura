@@ -135,7 +135,7 @@ export const storeLocationsQuery = groq`*[_type == "storeLocation"] | order(name
   image
 }`;
 
-// About Sections
+// About Sections (Legacy)
 export const aboutSectionsQuery = groq`*[_type == "aboutSection"] | order(order asc){
   _id,
   title,
@@ -144,6 +144,34 @@ export const aboutSectionsQuery = groq`*[_type == "aboutSection"] | order(order 
   image,
   imagePosition,
   order
+}`;
+
+// About Page (New)
+export const aboutPageQuery = groq`*[_type == "aboutPage"][0]{
+  _id,
+  pageTitle,
+  pageDescription,
+  heroTitle,
+  heroSubtitle,
+  heroBackgroundImage,
+  introHeading,
+  introContent,
+  contentSections[] | order(order asc) {
+    title,
+    content,
+    image,
+    imagePosition,
+    order
+  },
+  valuesHeading,
+  valuesDescription,
+  values[] | order(order asc) {
+    icon,
+    title,
+    description,
+    order
+  },
+  isPublished
 }`;
 
 // Site Settings

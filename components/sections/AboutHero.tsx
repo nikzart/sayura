@@ -3,8 +3,20 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { getSanityImageUrl } from '@/lib/sanityHelpers';
+import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 
-export default function AboutHero() {
+interface AboutHeroProps {
+  title?: string;
+  subtitle?: string;
+  backgroundImage?: SanityImageSource | string;
+}
+
+export default function AboutHero({
+  title = 'Our Story',
+  subtitle = 'Where heritage meets innovation, and every piece tells a story of passion, dedication, and timeless beauty',
+  backgroundImage = '/images/collections/heritage.jpg'
+}: AboutHeroProps) {
   const scrollToContent = () => {
     window.scrollTo({
       top: window.innerHeight,
@@ -12,11 +24,16 @@ export default function AboutHero() {
     });
   };
 
+  // Handle both Sanity images and static image paths
+  const imageUrl = typeof backgroundImage === 'string'
+    ? backgroundImage
+    : getSanityImageUrl(backgroundImage, 1920, 1080);
+
   return (
     <section className="relative w-full h-screen overflow-hidden">
       <Image
-        src="/images/collections/heritage.jpg"
-        alt="SAYURA - Our Story"
+        src={imageUrl}
+        alt={`SAYURA - ${title}`}
         fill
         className="object-cover"
         priority
@@ -32,10 +49,10 @@ export default function AboutHero() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="heading-xl mb-6 text-shadow-lg">
-              Our Story
+              {title}
             </h1>
             <p className="text-lg md:text-xl font-light tracking-wide max-w-3xl mx-auto text-shadow leading-relaxed">
-              Where heritage meets innovation, and every piece tells a story of passion, dedication, and timeless beauty
+              {subtitle}
             </p>
           </motion.div>
         </div>

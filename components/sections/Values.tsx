@@ -2,31 +2,50 @@
 
 import { motion } from 'framer-motion';
 import { Sparkles, Heart, Leaf, Users } from 'lucide-react';
+import ValueIcon from '@/components/ui/ValueIcon';
 
-const values = [
+interface Value {
+  icon: string;
+  title: string;
+  description: string;
+  order?: number;
+}
+
+interface ValuesProps {
+  heading?: string;
+  description?: string;
+  values?: Value[];
+}
+
+// Fallback static values
+const defaultValues = [
   {
-    icon: Sparkles,
+    icon: 'sparkles',
     title: 'Excellence',
     description: 'We never compromise on quality, ensuring every piece meets our rigorous standards of craftsmanship and design.',
   },
   {
-    icon: Heart,
+    icon: 'heart',
     title: 'Passion',
     description: 'Our love for fashion and dedication to our craft drives us to create pieces that inspire and delight.',
   },
   {
-    icon: Leaf,
+    icon: 'leaf',
     title: 'Sustainability',
     description: 'We are committed to ethical practices and environmental responsibility in every aspect of our business.',
   },
   {
-    icon: Users,
+    icon: 'users',
     title: 'Community',
     description: 'We value the artisans, partners, and customers who make SAYURA possible, fostering meaningful relationships.',
   },
 ];
 
-export default function Values() {
+export default function Values({
+  heading = 'Our Values',
+  description = 'The principles that guide us in everything we do',
+  values = defaultValues
+}: ValuesProps) {
   return (
     <section className="section-padding bg-gray-50">
       <div className="container-custom">
@@ -37,9 +56,9 @@ export default function Values() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="heading-lg mb-4">Our Values</h2>
+          <h2 className="heading-lg mb-4">{heading}</h2>
           <p className="body-text text-gray-600 max-w-2xl mx-auto">
-            The principles that guide us in everything we do
+            {description}
           </p>
         </motion.div>
 
@@ -54,7 +73,7 @@ export default function Values() {
               className="text-center"
             >
               <div className="w-16 h-16 bg-gold rounded-full flex items-center justify-center mx-auto mb-6">
-                <value.icon size={28} className="text-white" />
+                <ValueIcon iconName={value.icon} size={28} className="text-white" />
               </div>
               <h3 className="text-xl font-medium mb-3">{value.title}</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
