@@ -1,10 +1,65 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Instagram, Facebook } from 'lucide-react';
+import { Instagram, Facebook, Twitter } from 'lucide-react';
 import { BRAND_NAME, NAV_LINKS, SOCIAL_LINKS } from '@/lib/constants';
 
-export default function Footer() {
+interface FooterLink {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
+interface SiteSettings {
+  brandName?: string;
+  footerText?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    pinterest?: string;
+    twitter?: string;
+  };
+  showSocialInFooter?: boolean;
+  footerLinks?: {
+    customerCare?: FooterLink[];
+    legal?: FooterLink[];
+  };
+}
+
+interface FooterProps {
+  siteSettings?: SiteSettings;
+}
+
+export default function Footer({ siteSettings }: FooterProps) {
   const currentYear = new Date().getFullYear();
+
+  // Extract settings with fallbacks
+  const brandName = siteSettings?.brandName || BRAND_NAME;
+  const footerText =
+    siteSettings?.footerText ||
+    `Discover timeless elegance and exceptional craftsmanship with ${brandName}'s exclusive collection of premium clothing.`;
+  const contactEmail = siteSettings?.contactEmail || 'hello@sayura.in';
+  const contactPhone = siteSettings?.contactPhone || '+91 1234 567890';
+  const socialLinks = siteSettings?.socialLinks || SOCIAL_LINKS;
+  const showSocial = siteSettings?.showSocialInFooter !== false;
+
+  // Default customer care links
+  const defaultCustomerCare: FooterLink[] = [
+    { label: 'Shipping & Delivery', href: '/shipping' },
+    { label: 'Returns & Exchanges', href: '/returns' },
+    { label: 'Size Guide', href: '/size-guide' },
+    { label: 'FAQ', href: '/faq' },
+  ];
+
+  // Default legal links
+  const defaultLegal: FooterLink[] = [
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+  ];
+
+  const customerCareLinks = siteSettings?.footerLinks?.customerCare || defaultCustomerCare;
+  const legalLinks = siteSettings?.footerLinks?.legal || defaultLegal;
 
   return (
     <footer className="bg-black text-white">
@@ -15,13 +70,13 @@ export default function Footer() {
           <div>
             <Image
               src="/sayura-logo.svg"
-              alt={BRAND_NAME}
+              alt={brandName}
               width={120}
               height={40}
               className="h-8 w-auto mb-6 brightness-0 invert"
             />
             <p className="text-sm font-light leading-relaxed text-gray-400">
-              Discover timeless elegance and exceptional craftsmanship with {BRAND_NAME}'s exclusive collection of premium clothing.
+              {footerText}
             </p>
           </div>
 
@@ -50,26 +105,18 @@ export default function Footer() {
               Customer Care
             </h4>
             <ul className="space-y-3">
-              <li>
-                <Link href="/shipping" className="text-sm font-light text-gray-400 hover:text-white link-underline transition-colors">
-                  Shipping & Delivery
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="text-sm font-light text-gray-400 hover:text-white link-underline transition-colors">
-                  Returns & Exchanges
-                </Link>
-              </li>
-              <li>
-                <Link href="/size-guide" className="text-sm font-light text-gray-400 hover:text-white link-underline transition-colors">
-                  Size Guide
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="text-sm font-light text-gray-400 hover:text-white link-underline transition-colors">
-                  FAQ
-                </Link>
-              </li>
+              {customerCareLinks.map((link, index) => (
+                <li key={index}>
+                  <Link
+                    href={link.href}
+                    className="text-sm font-light text-gray-400 hover:text-white link-underline transition-colors"
+                    target={link.external ? '_blank' : undefined}
+                    rel={link.external ? 'noopener noreferrer' : undefined}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -78,31 +125,48 @@ export default function Footer() {
             <h4 className="text-base font-medium tracking-widest-2 uppercase mb-6">
               Connect
             </h4>
-            <div className="flex gap-4 mb-6">
-              <a
-                href={SOCIAL_LINKS.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 border border-gray-700 hover:border-white transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram size={20} />
-              </a>
-              <a
-                href={SOCIAL_LINKS.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 border border-gray-700 hover:border-white transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook size={20} />
-              </a>
-            </div>
+            {showSocial && (socialLinks.instagram || socialLinks.facebook || socialLinks.twitter) && (
+              <div className="flex gap-4 mb-6">
+                {socialLinks.instagram && (
+                  <a
+                    href={socialLinks.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 border border-gray-700 hover:border-white transition-colors"
+                    aria-label="Instagram"
+                  >
+                    <Instagram size={20} />
+                  </a>
+                )}
+                {socialLinks.facebook && (
+                  <a
+                    href={socialLinks.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 border border-gray-700 hover:border-white transition-colors"
+                    aria-label="Facebook"
+                  >
+                    <Facebook size={20} />
+                  </a>
+                )}
+                {socialLinks.twitter && (
+                  <a
+                    href={socialLinks.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 border border-gray-700 hover:border-white transition-colors"
+                    aria-label="Twitter"
+                  >
+                    <Twitter size={20} />
+                  </a>
+                )}
+              </div>
+            )}
             <p className="text-sm font-light text-gray-400 mb-2">
-              Email: hello@sayura.in
+              Email: {contactEmail}
             </p>
             <p className="text-sm font-light text-gray-400">
-              Phone: +91 1234 567890
+              Phone: {contactPhone}
             </p>
           </div>
         </div>
@@ -111,15 +175,20 @@ export default function Footer() {
         <div className="pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs font-light text-gray-500">
-              © {currentYear} {BRAND_NAME}. All rights reserved.
+              © {currentYear} {brandName}. All rights reserved.
             </p>
             <div className="flex gap-6">
-              <Link href="/privacy" className="text-xs font-light text-gray-500 hover:text-white transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="text-xs font-light text-gray-500 hover:text-white transition-colors">
-                Terms of Service
-              </Link>
+              {legalLinks.map((link, index) => (
+                <Link
+                  key={index}
+                  href={link.href}
+                  className="text-xs font-light text-gray-500 hover:text-white transition-colors"
+                  target={link.external ? '_blank' : undefined}
+                  rel={link.external ? 'noopener noreferrer' : undefined}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
         </div>

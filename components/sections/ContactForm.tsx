@@ -1,19 +1,84 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 
-export default function ContactForm() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
-  });
+// Icon mapping for contact cards
+const iconMap = {
+  email: Mail,
+  phone: Phone,
+  location: MapPin,
+  whatsapp: MessageCircle,
+};
+
+interface ContactInfoCard {
+  icon: 'email' | 'phone' | 'location' | 'whatsapp';
+  title: string;
+  lines: string[];
+  order: number;
+}
+
+interface FormField {
+  name: string;
+  label: string;
+  type: 'text' | 'email' | 'tel' | 'textarea';
+  placeholder?: string;
+  required: boolean;
+  order: number;
+}
+
+interface ContactFormProps {
+  sectionHeading?: string;
+  sectionIntro?: string;
+  contactInfoCards?: ContactInfoCard[];
+  formFields?: FormField[];
+  successMessage?: string;
+  errorMessage?: string;
+}
+
+export default function ContactForm({
+  sectionHeading = 'Get in Touch',
+  sectionIntro = "Have a question or need assistance? Our team is here to help. Reach out to us and we'll get back to you as soon as possible.",
+  contactInfoCards = [
+    {
+      icon: 'email',
+      title: 'Email Us',
+      lines: ['hello@sayura.in', 'support@sayura.in'],
+      order: 1,
+    },
+    {
+      icon: 'phone',
+      title: 'Call Us',
+      lines: ['+91 1234 567890', 'Mon-Sat, 10:00 AM - 7:00 PM IST'],
+      order: 2,
+    },
+    {
+      icon: 'location',
+      title: 'Visit Us',
+      lines: ['123 Fashion Street', 'Bandra West, Mumbai', 'Maharashtra 400050, India'],
+      order: 3,
+    },
+  ],
+  formFields = [
+    { name: 'name', label: 'Name', type: 'text', required: true, order: 1 },
+    { name: 'email', label: 'Email', type: 'email', required: true, order: 2 },
+    { name: 'phone', label: 'Phone', type: 'tel', required: false, order: 3 },
+    { name: 'subject', label: 'Subject', type: 'text', required: true, order: 4 },
+    { name: 'message', label: 'Message', type: 'textarea', required: true, order: 5 },
+  ],
+  successMessage = "Your message has been sent successfully. We'll get back to you soon.",
+  errorMessage = 'There was an error sending your message. Please try again.',
+}: ContactFormProps) {
+  // Initialize form data dynamically based on form fields
+  const initialFormData = formFields.reduce((acc, field) => {
+    acc[field.name] = '';
+    return acc;
+  }, {} as Record<string, string>);
+
+  const [formData, setFormData] = useState(initialFormData);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -22,10 +87,18 @@ export default function ContactForm() {
     console.log('Form submitted:', formData);
     setIsSubmitted(true);
     setTimeout(() => {
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      setFormData(initialFormData);
       setIsSubmitted(false);
     }, 3000);
   };
+
+  const handleFieldChange = (fieldName: string, value: string) => {
+    setFormData({ ...formData, [fieldName]: value });
+  };
+
+  // Sort fields by order
+  const sortedFields = [...formFields].sort((a, b) => a.order - b.order);
+  const sortedCards = [...contactInfoCards].sort((a, b) => a.order - b.order);
 
   return (
     <section className="pt-24 md:pt-32 section-padding">
@@ -37,47 +110,31 @@ export default function ContactForm() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="heading-lg mb-6">Get in Touch</h1>
-            <p className="body-text text-gray-600 mb-12">
-              Have a question or need assistance? Our team is here to help. Reach out to us and we'll get back to you as soon as possible.
-            </p>
+            <h1 className="heading-lg mb-6">{sectionHeading}</h1>
+            <p className="body-text text-gray-600 mb-12">{sectionIntro}</p>
 
             <div className="space-y-8">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Mail size={20} className="text-gold" />
-                </div>
-                <div>
-                  <h3 className="font-medium mb-1">Email Us</h3>
-                  <p className="text-gray-600">hello@sayura.in</p>
-                  <p className="text-gray-600">support@sayura.in</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Phone size={20} className="text-gold" />
-                </div>
-                <div>
-                  <h3 className="font-medium mb-1">Call Us</h3>
-                  <p className="text-gray-600">+91 1234 567890</p>
-                  <p className="text-sm text-gray-500 mt-1">Mon-Sat, 10:00 AM - 7:00 PM IST</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <MapPin size={20} className="text-gold" />
-                </div>
-                <div>
-                  <h3 className="font-medium mb-1">Visit Us</h3>
-                  <p className="text-gray-600">
-                    123 Fashion Street<br />
-                    Bandra West, Mumbai<br />
-                    Maharashtra 400050, India
-                  </p>
-                </div>
-              </div>
+              {sortedCards.map((card, index) => {
+                const IconComponent = iconMap[card.icon] || Mail;
+                return (
+                  <div key={index} className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <IconComponent size={20} className="text-gold" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium mb-1">{card.title}</h3>
+                      {card.lines.map((line, lineIndex) => (
+                        <p
+                          key={lineIndex}
+                          className={lineIndex === card.lines.length - 1 && card.lines.length > 2 ? 'text-sm text-gray-500 mt-1' : 'text-gray-600'}
+                        >
+                          {line}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </motion.div>
 
@@ -106,55 +163,42 @@ export default function ContactForm() {
                   </svg>
                 </div>
                 <h3 className="heading-sm mb-3">Thank You!</h3>
-                <p className="text-gray-600">
-                  Your message has been sent successfully. We'll get back to you soon.
-                </p>
+                <p className="text-gray-600">{successMessage}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <Input
-                  label="Name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
+                {sortedFields.map((field) => {
+                  if (field.type === 'textarea') {
+                    return (
+                      <div key={field.name}>
+                        <label className="block text-sm font-medium tracking-widest-2 uppercase mb-2">
+                          {field.label}
+                          {field.required && ' *'}
+                        </label>
+                        <textarea
+                          value={formData[field.name] || ''}
+                          onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                          required={field.required}
+                          placeholder={field.placeholder}
+                          rows={6}
+                          className="w-full px-4 py-3 border border-gray-300 focus:border-black focus:outline-none transition-colors font-light resize-none"
+                        />
+                      </div>
+                    );
+                  }
 
-                <Input
-                  label="Email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
-
-                <Input
-                  label="Phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-
-                <Input
-                  label="Subject"
-                  type="text"
-                  value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  required
-                />
-
-                <div>
-                  <label className="block text-sm font-medium tracking-widest-2 uppercase mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    required
-                    rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 focus:border-black focus:outline-none transition-colors font-light resize-none"
-                  />
-                </div>
+                  return (
+                    <Input
+                      key={field.name}
+                      label={field.label}
+                      type={field.type}
+                      value={formData[field.name] || ''}
+                      onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                      required={field.required}
+                      placeholder={field.placeholder}
+                    />
+                  );
+                })}
 
                 <Button type="submit" variant="gold" size="lg" fullWidth>
                   Send Message

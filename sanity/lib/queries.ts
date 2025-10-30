@@ -170,8 +170,59 @@ export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]{
   logoMinimized,
   tagline,
   contactEmail,
+  supportEmail,
   contactPhone,
+  whatsappNumber,
+  businessHours,
+  address {
+    street,
+    city,
+    state,
+    postalCode,
+    country
+  },
+  brandDescription,
+  footerText,
   socialLinks,
+  showSocialInFooter,
+  contactPage {
+    heroTitle,
+    heroSubtitle,
+    heroBackgroundImage,
+    sectionHeading,
+    sectionIntro,
+    contactInfoCards[] | order(order asc) {
+      icon,
+      title,
+      lines,
+      order
+    }
+  },
+  contactForm {
+    recipientEmail,
+    successMessage,
+    errorMessage,
+    fields[] | order(order asc) {
+      name,
+      label,
+      type,
+      placeholder,
+      required,
+      order
+    }
+  },
+  footerLinks {
+    customerCare[] {
+      label,
+      href,
+      external
+    },
+    legal[] {
+      label,
+      href,
+      external
+    }
+  },
   seo
 }`;
 

@@ -3,8 +3,19 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { urlFor } from '@/sanity/lib/image';
 
-export default function ContactHero() {
+interface ContactHeroProps {
+  title?: string;
+  subtitle?: string;
+  backgroundImage?: any;
+}
+
+export default function ContactHero({
+  title = 'Get In Touch',
+  subtitle = "We're here to assist you. Reach out for inquiries about our collections, services, or styling advice",
+  backgroundImage,
+}: ContactHeroProps) {
   const scrollToContent = () => {
     window.scrollTo({
       top: window.innerHeight,
@@ -12,11 +23,16 @@ export default function ContactHero() {
     });
   };
 
+  // Determine image source - Sanity image or fallback
+  const imageSrc = backgroundImage
+    ? urlFor(backgroundImage).width(1920).url()
+    : '/images/contact-hero.jpg';
+
   return (
     <section className="relative w-full h-screen overflow-hidden">
       <Image
-        src="/images/contact-hero.jpg"
-        alt="Contact SAYURA"
+        src={imageSrc}
+        alt={title}
         fill
         className="object-cover"
         priority
@@ -32,10 +48,10 @@ export default function ContactHero() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="heading-xl mb-6 text-shadow-lg">
-              Get In Touch
+              {title}
             </h1>
             <p className="text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto text-shadow">
-              We're here to assist you. Reach out for inquiries about our collections, services, or styling advice
+              {subtitle}
             </p>
           </motion.div>
         </div>
